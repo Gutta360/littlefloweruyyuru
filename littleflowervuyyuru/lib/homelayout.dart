@@ -1,4 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:littleflower/jsonupload.dart';
+import 'package:littleflower/login.dart';
+import 'package:littleflower/payments.dart';
+import 'package:littleflower/student.dart';
+import 'package:littleflower/studentdetails.dart';
 
 class HomeLayoutWidget extends StatefulWidget {
   const HomeLayoutWidget({super.key});
@@ -12,14 +17,28 @@ class _HomeLayoutWidgetState extends State<HomeLayoutWidget> {
   String selectedSubTab = 'Dashboard';
 
   final Map<String, List<String>> subTabs = {
-    'Home': ['Dashboard'], // 🏠 NEW HOME TAB
+    'Home': ['Dashboard'],
     'Student': ['Student', 'Student Details'],
     'Staff': ['Staff', 'Staff Details'],
-    'Payments': ['Income', 'Outgoing'],
+    'Accounts': ['Income', 'Outgoing'],
     'Inventory': ['Item', 'Item Details'],
+    'Admin': ['Upload Data'],
+    'Logout': [],
   };
 
   Widget getTabContent() {
+    if (selectedSubTab == 'Student') {
+      return const StudentFormWidget();
+    }
+    if (selectedSubTab == 'Student Details') {
+      return const StudentDetailsWidget();
+    }
+    if (selectedSubTab == 'Income') {
+      return const PaymentFormWidget();
+    }
+    if (selectedSubTab == 'Upload Data') {
+      return JsonUploadWidget();
+    }
     return Center(
       child: Text(
         'Showing content for: $selectedSubTab',
@@ -33,20 +52,37 @@ class _HomeLayoutWidgetState extends State<HomeLayoutWidget> {
     return Scaffold(
       body: Row(
         children: [
-          // Side Navigation Column
           Container(
             width: MediaQuery.of(context).size.width * 0.15,
-            color: Colors.blueGrey.shade50,
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/creamatte.png'),
+                fit: BoxFit.cover,
+              ),
+            ),
             child: ListView(
               children: subTabs.keys.map((tab) {
+                if (tab == 'Logout') {
+                  return ListTile(
+                    title: const Text('Logout', style: TextStyle(color: Colors.red)),
+                    leading: const Icon(Icons.logout, color: Colors.red),
+                    onTap: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => const NewLoginPage()),
+                      );
+                    },
+                  );
+                }
+
                 bool isExpanded = expandedTab == tab;
                 return ExpansionTile(
                   initiallyExpanded: isExpanded,
                   title: Text(
                     tab,
                     style: TextStyle(
-                      fontWeight:
-                          isExpanded ? FontWeight.bold : FontWeight.normal,
+                      fontWeight: isExpanded ? FontWeight.bold : FontWeight.normal,
+                      color: Colors.blueGrey,
                     ),
                   ),
                   onExpansionChanged: (expanded) {
@@ -58,7 +94,10 @@ class _HomeLayoutWidgetState extends State<HomeLayoutWidget> {
                   children: subTabs[tab]!
                       .map(
                         (subTab) => ListTile(
-                          title: Text(subTab),
+                          title: Text(
+                            subTab,
+                            style: const TextStyle(color: Colors.blueGrey),
+                          ),
                           selected: selectedSubTab == subTab,
                           onTap: () {
                             setState(() {
@@ -73,10 +112,14 @@ class _HomeLayoutWidgetState extends State<HomeLayoutWidget> {
               }).toList(),
             ),
           ),
-          // Main Content Area
           Container(
             width: MediaQuery.of(context).size.width * 0.85,
-            color: Colors.white,
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('assets/images/creamatte.png'),
+                fit: BoxFit.cover,
+              ),
+            ),
             child: getTabContent(),
           ),
         ],

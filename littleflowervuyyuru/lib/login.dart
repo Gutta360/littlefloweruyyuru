@@ -18,7 +18,7 @@ class _NewLoginPageState extends State<NewLoginPage> {
     if (_formKey.currentState!.validate()) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => HomeLayoutWidget()),
+        MaterialPageRoute(builder: (context) => const HomeLayoutWidget()),
       );
     }
   }
@@ -30,7 +30,7 @@ class _NewLoginPageState extends State<NewLoginPage> {
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final fieldWidth = screenWidth * 0.33; // One-third of screen width
+    final fieldWidth = screenWidth * 0.33;
 
     return Scaffold(
       body: RawKeyboardListener(
@@ -41,73 +41,87 @@ class _NewLoginPageState extends State<NewLoginPage> {
             _login();
           }
         },
-        child: Center(
-          child: SingleChildScrollView(
-            child: Form(
-              key: _formKey,
-              child: ConstrainedBox(
-                constraints: BoxConstraints(maxWidth: fieldWidth),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextFormField(
-                      controller: _emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      decoration: const InputDecoration(
-                        labelText: 'Email',
-                        prefixIcon: Icon(Icons.email),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Please enter an email';
-                        } else if (!RegExp(
-                          r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
-                        ).hasMatch(value.trim())) {
-                          return 'Please enter a valid email';
-                        }
-                        return null;
-                      },
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            Opacity(
+              opacity: 0.4,
+              child: Image.asset(
+                'assets/images/loginbackground.jpg',
+                fit: BoxFit.cover,
+              ),
+            ),
+            Center(
+              child: SingleChildScrollView(
+                child: Form(
+                  key: _formKey,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(maxWidth: fieldWidth),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        TextFormField(
+                          controller: _emailController,
+                          keyboardType: TextInputType.emailAddress,
+                          decoration: const InputDecoration(
+                            labelText: 'Email',
+                            prefixIcon: Icon(Icons.email),
+                          ),
+                          onFieldSubmitted: (_) => _login(),
+                          validator: (value) {
+                            // if (value == null || value.trim().isEmpty) {
+                            //   return 'Please enter an email';
+                            // } else if (!RegExp(
+                            //   r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
+                            // ).hasMatch(value.trim())) {
+                            //   return 'Please enter a valid email';
+                            // }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: _passwordController,
+                          obscureText: true,
+                          decoration: const InputDecoration(
+                            labelText: 'Password',
+                            prefixIcon: Icon(Icons.lock),
+                          ),
+                          onFieldSubmitted: (_) => _login(),
+                          validator: (value) {
+                            // if (value == null || value.trim().isEmpty) {
+                            //   return 'Please enter a password';
+                            // }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 38),
+                        ElevatedButton(
+                          onPressed: _login,
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            backgroundColor: Colors.grey[800],
+                            padding: const EdgeInsets.symmetric(vertical: 14),
+                            minimumSize: const Size(120, 40),
+                            textStyle: const TextStyle(fontSize: 15),
+                          ),
+                          child: const Text('Login'),
+                        ),
+                        const SizedBox(height: 16),
+                        TextButton(
+                          onPressed: _forgotPassword,
+                          child: const Text(
+                            'Forgot Password?',
+                            style: TextStyle(color: Colors.grey),
+                          ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _passwordController,
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                        labelText: 'Password',
-                        prefixIcon: Icon(Icons.lock),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Please enter a password';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 38),
-                    ElevatedButton(
-                      onPressed: _login,
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Colors.white,
-                        backgroundColor: Colors.grey[800],
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        minimumSize: const Size(120, 40),
-                        textStyle: const TextStyle(fontSize: 15),
-                      ),
-                      child: const Text('Login'),
-                    ),
-                    const SizedBox(height: 16),
-                    TextButton(
-                      onPressed: _forgotPassword,
-                      child: const Text(
-                        'Forgot Password?',
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ),
-          ),
+          ],
         ),
       ),
     );
